@@ -1,0 +1,7 @@
+[MAIN]
+ssl = true
+ssl.key = cert/key.pem
+ssl.cert = cert/cert.pem
+api.host = 0.0.0.0
+api.port = 5000
+
