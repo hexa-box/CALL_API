@@ -62,7 +62,10 @@ def signature(fun_name):
         return jsonify(error="Bad request", message=f"The {fun_name} function does not exist or is not allowed"), 400
     
     sing = inspect.signature(globals()[fun_name])
-    args = list(map(lambda name: {'name': name, 'type': sing.parameters[name].annotation.__name__} ,sing.parameters))
+    args = list(map(lambda name: {'name': name,
+                                  'type': sing.parameters[name].annotation.__name__ if sing.parameters[name].annotation != inspect._empty else None,
+                                  'default': sing.parameters[name].default if sing.parameters[name].default != inspect._empty else None
+                                  } ,sing.parameters))
     return {'args' : args, "type": sing.return_annotation.__name__}
     
 # La commande pour la génération du certificat :
