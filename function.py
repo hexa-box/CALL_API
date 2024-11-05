@@ -17,8 +17,8 @@ def getx(name):
 def badfun(name):
     return not_exist_var 
 
-# https://localhost:5000/api/call/getHistory?args={"symbol":"MSFT"}
-def getHistory(symbol: str = "MSFT", period="1mo")-> str:
+# https://localhost:5000/api/call/load_stock?args={"symbol":"MSFT"}
+def load_stock(symbol: str = "MSFT")-> str:
 
     path = f"data/stocks/{symbol}"
     
@@ -27,7 +27,7 @@ def getHistory(symbol: str = "MSFT", period="1mo")-> str:
     # get all stock info
     #ticker.info
 
-    hist = ticker.history(period=period)
+    
   
     try:
         last_update = pd.read_parquet(path, columns=["Date"]).index.max()   
@@ -35,11 +35,16 @@ def getHistory(symbol: str = "MSFT", period="1mo")-> str:
     except FileNotFoundError :
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
+
+    hist = ticker.history(start=last_update.strftime('%Y-%m-%d'))
     
+    print(hist)
     print(f"Last update = {last_update}")
 
     hist = hist[hist.index > last_update.strftime('%Y-%m-%d')]
-
+    
+    print(hist)
+    
     hist['partition'] = hist.index
     hist['partition'] = pd.Categorical(hist['partition'].dt.strftime('%Y-%m'))
 
@@ -49,4 +54,4 @@ def getHistory(symbol: str = "MSFT", period="1mo")-> str:
    
     return str(df2)
 
-getHistory("MSFT")
+load_stock("GOOG")
