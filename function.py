@@ -51,11 +51,15 @@ def load_stock(symbol: str = "MSFT")-> str:
    
     return True
 
-
-def get_stock(symbol: str = "MSFT")-> str:
+# https://localhost:5000/api/call/get_stock?args={"symbol":"MSFT", "start": "2024-11-05"}
+def get_stock(symbol: str = "MSFT", 
+            start: str = "1900-01-01", end: str = "3000-01-01")-> str:
 
     path = f"{DATA_PATH}/stocks/{symbol}"
     stock = pd.read_parquet(path)
+
+    stock = stock[(stock.index >= start) & (stock.index <= end)]
+    
     return stock.to_dict()
 
 # load_stock("GOOG")
