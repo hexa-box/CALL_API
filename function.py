@@ -5,6 +5,8 @@ import datetime
 
 x = 20
 
+DATA_PATH = "data/"
+
 def coucou(a: int)-> str:
     return "l'argument a et de type: "+type(a).__name__ + " et la valeur et "+str(a)
 
@@ -20,15 +22,13 @@ def badfun(name):
 # https://localhost:5000/api/call/load_stock?args={"symbol":"MSFT"}
 def load_stock(symbol: str = "MSFT")-> str:
 
-    path = f"data/stocks/{symbol}"
+    path = f"{DATA_PATH}/stocks/{symbol}"
     
     ticker = yf.Ticker(symbol)
 
     # get all stock info
     #ticker.info
 
-    
-  
     try:
         last_update = pd.read_parquet(path, columns=["Date"]).index.max()   
         append_mode = True
@@ -38,20 +38,24 @@ def load_stock(symbol: str = "MSFT")-> str:
 
     hist = ticker.history(start=last_update.strftime('%Y-%m-%d'))
     
-    print(hist)
-    print(f"Last update = {last_update}")
+    #print(hist)
+    #print(f"Last update = {last_update}")
 
     hist = hist[hist.index > last_update.strftime('%Y-%m-%d')]
     
-    print(hist)
+    #print(hist)
     
     hist['partition'] = hist.index
     hist['partition'] = pd.Categorical(hist['partition'].dt.strftime('%Y-%m'))
-
     hist.to_parquet(path,  engine='fastparquet', partition_cols=["partition"], append=append_mode)
-
-    df2 = pd.read_parquet(path)
    
-    return str(df2)
+    return True
 
-load_stock("GOOG")
+
+def get_stock(symbol: str = "MSFT")-> str:
+
+    path = f"{DATA_PATH}/stocks/{symbol}"
+    stock = pd.read_parquet(path)
+    return stock.to_dict()
+
+# load_stock("GOOG")
