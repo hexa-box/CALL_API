@@ -24,24 +24,31 @@ allowed_call = allowed_call.union(allowed_call2)
 
 print(allowed_call)
 
-
 app = Flask(__name__)
 
+
 # https://localhost:5000/api/call/get_stock?symbol="MSFT"&start="22024-11-05"
-# https://localhost:5000/api/call/get_stock?="MSFT"&="22024-11-05"
-# https://localhost:5000/api/call/coucou?args={"a":1}
+# https://localhost:5000/api/call/coucou?a=1
 @app.route('/api/call/<fun_name>', methods=['GET'])
 def call(fun_name):
-    print(request.args)
+  
+    # Build a kwargs
+    tmp_args = []
+    for arg in request.args:
+        tmp_args.append(f'"{arg.strip()}": {request.args.get(arg)}')
+    args = "{ "+",".join(tmp_args)+" }"
+
+    # Check if function call allowed
     if(fun_name not in allowed_call):
         return jsonify(error="Bad request", message=f"The {fun_name} function does not exist or is not allowed"), 400
-     
+    
+    # Check if args is a valide json 
     try:
-        args = json.loads(request.args.get("args"))
+        kwargs = json.loads(args)
     except Exception as e:
         return jsonify(error="Bad request", message=f"The json of the args variable is invalid"), 400
      
-    
+    # Execute called function 
     if(fun_name in locals()):
         fun_call = locals()[fun_name]
     else:
@@ -50,11 +57,12 @@ def call(fun_name):
     result = None
     exception = None
     try:
-        result =  str(fun_call(**args))
+        result =  str(fun_call(**kwargs))
     except Exception as e:
         exception = str(e)
 
     return {'result': result, 'exception': exception}
+
 
 # https://localhost:5000/api/signature/coucou
 @app.route('/api/signature/<fun_name>', methods=['GET'])

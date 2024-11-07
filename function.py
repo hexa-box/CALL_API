@@ -19,7 +19,8 @@ def getx(name):
 def badfun(name):
     return not_exist_var 
 
-# https://localhost:5000/api/call/load_stock?args={"symbol":"MSFT"}
+
+# https://localhost:5000/api/call/load_stock?symbol="MSFT"
 def load_stock(symbol: str = "MSFT")-> str:
 
     path = f"{DATA_PATH}/stocks/{symbol}"
@@ -51,7 +52,8 @@ def load_stock(symbol: str = "MSFT")-> str:
    
     return True
 
-# https://localhost:5000/api/call/get_stock?args={"symbol":"MSFT", "start": "2024-11-05"}
+
+# https://localhost:5000/api/call/get_stock?symbol="MSFT"&start="2024-11-05"
 def get_stock(symbol: str = "MSFT", 
             start: str = "1900-01-01", end: str = "3000-01-01")-> str:
 
