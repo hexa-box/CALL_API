@@ -27,10 +27,12 @@ print(allowed_call)
 
 app = Flask(__name__)
 
+# https://localhost:5000/api/call/get_stock?symbol="MSFT"&start="22024-11-05"
+# https://localhost:5000/api/call/get_stock?="MSFT"&="22024-11-05"
 # https://localhost:5000/api/call/coucou?args={"a":1}
 @app.route('/api/call/<fun_name>', methods=['GET'])
 def call(fun_name):
-
+    print(request.args)
     if(fun_name not in allowed_call):
         return jsonify(error="Bad request", message=f"The {fun_name} function does not exist or is not allowed"), 400
      
