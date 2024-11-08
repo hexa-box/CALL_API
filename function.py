@@ -31,23 +31,19 @@ def load_stock(symbol: str = "MSFT")-> str:
     #ticker.info
 
     try:
-        last_update = pd.read_parquet(path, columns=["Date"]).index.max()   
+        last_update = pd.read_parquet(path, engine='fastparquet', columns=["Date"])["Date"].max()   
         append_mode = True
     except FileNotFoundError :
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
 
     hist = ticker.history(start=last_update.strftime('%Y-%m-%d'))
-    
-    print(hist)
-    print(f"Last update = {last_update}")
-
     hist = hist[hist.index > last_update.strftime('%Y-%m-%d')]
-    
-    print(hist)
     
     hist['partition'] = hist.index
     hist['partition'] = pd.Categorical(hist['partition'].dt.strftime('%Y-%m'))
+    hist.reset_index(drop=False, inplace=True)
+    
     hist.to_parquet(path,  engine='fastparquet', partition_cols=["partition"], append=append_mode)
    
     return True
@@ -58,14 +54,12 @@ def get_stock(symbol: str = "MSFT",
             start: str = "1900-01-01", end: str = "3000-01-01")-> str:
 
     path = f"{DATA_PATH}/stocks/{symbol}"
-    stock = pd.read_parquet(path)
-    
-    print(start)
-    print(end)
-    print(stock.index)
+    stock = pd.read_parquet(path, engine='fastparquet')
+    stock.set_index("Date", inplace=True)
+
     stock = stock[(stock.index >= start) & (stock.index <= end)]
-    print(stock)
 
     return stock.to_dict()
 
-# load_stock("GOOG")
+#load_stock("GOOG")
+#print(get_stock("GOOG", start="2024-11-05"))

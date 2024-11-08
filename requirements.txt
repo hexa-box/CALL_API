@@ -1,3 +1,4 @@
 yfinance==0.2.48
 Flask==3.0.3
 fastparquet==2024.5.0
+pyarrow==18.0.0
