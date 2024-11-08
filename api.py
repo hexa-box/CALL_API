@@ -37,8 +37,9 @@ def call(fun_name):
 
     # Check if function call allowed
     if (fun_name not in allowed_call):
-        return jsonify(error="Bad request", 
-                       message=f"The {fun_name} function does not exist or is not allowed"), 400
+        return jsonify(error="Bad request",
+                       message=f"The {fun_name} "
+                       "function does not exist or is not allowed"), 400
 
     # Get callabel function
     if (fun_name in locals()):
@@ -60,8 +61,9 @@ def call(fun_name):
     try:
         kwargs = json.loads(args)
     except Exception as e:
-        return jsonify(error="Bad request", 
-                       message=f"The json of the args variable is invalid"), 400
+        return jsonify(
+            error="Bad request",
+            message=f"The json of the args variable is invalid"), 400
 
     # Execute called function
     result = None
@@ -81,7 +83,8 @@ def signature(fun_name):
 
     if (fun_name not in allowed_call):
         return jsonify(error="Bad request",
-                       message=f"The {fun_name} function does not exist or is not allowed"), 400
+                       message=f"The {fun_name} "
+                       "function does not exist or is not allowed"), 400
 
     return get_signature(globals()[fun_name])
 
@@ -90,10 +93,16 @@ def get_signature(fun):
 
     sing = inspect.signature(fun)
     args = list(
-        map(lambda name: {'name': name,
-                          'type': sing.parameters[name].annotation.__name__ if sing.parameters[name].annotation != inspect._empty else None,
-                          'default': sing.parameters[name].default if sing.parameters[name].default != inspect._empty else None
-                          }, sing.parameters))
+        map(lambda name:
+            {'name': name,
+             'type': (sing.parameters[name].annotation.__name__
+                      if sing.parameters[name].annotation != inspect._empty
+                      else None),
+             'default': (
+                 sing.parameters[name].default
+                 if sing.parameters[name].default != inspect._empty
+                 else None)
+             }, sing.parameters))
     return {'args': args, "type": sing.return_annotation.__name__}
 
 

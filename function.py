@@ -10,7 +10,8 @@ DATA_PATH = "data/"
 
 
 def coucou(a: int) -> str:
-    return "l'argument a et de type: "+type(a).__name__ + " et la valeur et "+str(a)
+    return "l'argument a et de type: "+type(a).__name__ + \
+        " et la valeur et "+str(a)
 
 
 def hello(name):
@@ -58,7 +59,8 @@ def load_stock(symbol: str = "MSFT") -> str:
 
 # https://localhost:5000/api/call/get_stock?symbol="MSFT"&start="2024-11-05"
 def get_stock(symbol: str = "MSFT",
-              start: str = "1900-01-01", end: str = "3000-01-01") -> str:
+              start: str = "1900-01-01", 
+              end: str = "3000-01-01") -> str:
 
     path = f"{DATA_PATH}/stocks/{symbol}"
     stock = pd.read_parquet(path, engine='fastparquet')
