@@ -59,7 +59,12 @@ def get_stock(symbol: str = "MSFT",
 
     stock = stock[(stock.index >= start) & (stock.index <= end)]
 
-    return stock.to_dict('series')
+    stock.reset_index(drop=False, inplace=True)
+    stock["Date"] = stock["Date"].dt.strftime('%Y-%m-%d')
+    return stock.to_dict('list')
 
+import json
 #load_stock("GOOG")
-#print(get_stock("GOOG", start="2024-11-05"))
+#data = get_stock("GOOG", start="2024-11-05")
+#print(data.keys())
+#print(json.dumps(data, indent = 4))
