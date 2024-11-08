@@ -3,20 +3,23 @@ import configparser
 import inspect
 import json
 
+
 def embed(code):
-    
+
     old_globals = set(globals().keys())
     exec(code, globals())
     new_globals = set(globals().keys())
-    allowed_call = new_globals-old_globals-set(["__warningregistry__","old_globals"])
+    allowed_call = new_globals-old_globals - \
+        set(["__warningregistry__", "old_globals"])
     # Filter no callable symbol
-    allowed_call = set(filter(lambda symbol: callable(globals()[symbol]), allowed_call))
+    allowed_call = set(
+        filter(lambda symbol: callable(globals()[symbol]), allowed_call))
 
     return allowed_call
 
 
 allowed_call = embed(open("function.py").read())
-allowed_call2 = embed(code = """
+allowed_call2 = embed(code="""
 def hello3(name):
     return "Hello 3 "+name
 """)
@@ -31,38 +34,41 @@ app = Flask(__name__)
 # https://localhost:5000/api/call/coucou?a=1
 @app.route('/api/call/<fun_name>', methods=['GET'])
 def call(fun_name):
-  
+
     # Check if function call allowed
-    if(fun_name not in allowed_call):
-        return jsonify(error="Bad request", message=f"The {fun_name} function does not exist or is not allowed"), 400
-    
+    if (fun_name not in allowed_call):
+        return jsonify(error="Bad request", 
+                       message=f"The {fun_name} function does not exist or is not allowed"), 400
+
     # Get callabel function
-    if(fun_name in locals()):
+    if (fun_name in locals()):
         fun_call = locals()[fun_name]
     else:
         fun_call = globals()[fun_name]
 
     # Build a kwargs
     tmp_args = []
-    needed_arg = list(map(lambda arg: arg["name"], get_signature(fun_call)["args"]))
+    needed_arg = list(
+        map(lambda arg: arg["name"], get_signature(fun_call)["args"]))
 
     for arg in request.args:
         if arg in needed_arg:
             tmp_args.append(f'"{arg.strip()}": {request.args.get(arg)}')
     args = "{ "+",".join(tmp_args)+" }"
 
-    # Check if args is a valide json 
+    # Check if args is a valide json
     try:
         kwargs = json.loads(args)
     except Exception as e:
-        return jsonify(error="Bad request", message=f"The json of the args variable is invalid"), 400
-     
-    # Execute called function 
+        return jsonify(error="Bad request", 
+                       message=f"The json of the args variable is invalid"), 400
+
+    # Execute called function
     result = None
     exception = None
-   
+
     try:
-        result =  fun_call(**kwargs)
+        result = fun_call(**kwargs)
     except Exception as e:
         exception = str(e)
 
@@ -72,9 +78,10 @@ def call(fun_name):
 # https://localhost:5000/api/signature/coucou
 @app.route('/api/signature/<fun_name>', methods=['GET'])
 def signature(fun_name):
-   
-    if(fun_name not in allowed_call):
-        return jsonify(error="Bad request", message=f"The {fun_name} function does not exist or is not allowed"), 400
+
+    if (fun_name not in allowed_call):
+        return jsonify(error="Bad request",
+                       message=f"The {fun_name} function does not exist or is not allowed"), 400
 
     return get_signature(globals()[fun_name])
 
@@ -82,18 +89,19 @@ def signature(fun_name):
 def get_signature(fun):
 
     sing = inspect.signature(fun)
-    args = list(map(lambda name: {'name': name,
-                                  'type': sing.parameters[name].annotation.__name__ if sing.parameters[name].annotation != inspect._empty else None,
-                                  'default': sing.parameters[name].default if sing.parameters[name].default != inspect._empty else None
-                                  } ,sing.parameters))
-    return {'args' : args, "type": sing.return_annotation.__name__}
+    args = list(
+        map(lambda name: {'name': name,
+                          'type': sing.parameters[name].annotation.__name__ if sing.parameters[name].annotation != inspect._empty else None,
+                          'default': sing.parameters[name].default if sing.parameters[name].default != inspect._empty else None
+                          }, sing.parameters))
+    return {'args': args, "type": sing.return_annotation.__name__}
 
 
 # La commande pour la génération du certificat :
 # openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
 
 if __name__ == '__main__':
-     
+
     config = configparser.ConfigParser()
     config.read('config.ini')
 
@@ -104,7 +112,7 @@ if __name__ == '__main__':
     ssl_key = config.get("MAIN", "ssl.key", fallback=None)
 
     if is_ssl:
-        app.run(ssl_context=(ssl_cert, ssl_key), 
+        app.run(ssl_context=(ssl_cert, ssl_key),
                 debug=True, host=host, port=port)
-    else: 
+    else:
         app.run(debug=True, host=host, port=port)
