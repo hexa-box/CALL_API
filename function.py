@@ -39,12 +39,12 @@ def load_stock(symbol: str = "MSFT")-> str:
 
     hist = ticker.history(start=last_update.strftime('%Y-%m-%d'))
     
-    #print(hist)
-    #print(f"Last update = {last_update}")
+    print(hist)
+    print(f"Last update = {last_update}")
 
     hist = hist[hist.index > last_update.strftime('%Y-%m-%d')]
     
-    #print(hist)
+    print(hist)
     
     hist['partition'] = hist.index
     hist['partition'] = pd.Categorical(hist['partition'].dt.strftime('%Y-%m'))
@@ -59,9 +59,13 @@ def get_stock(symbol: str = "MSFT",
 
     path = f"{DATA_PATH}/stocks/{symbol}"
     stock = pd.read_parquet(path)
-
-    stock = stock[(stock.index >= start) & (stock.index <= end)]
     
+    print(start)
+    print(end)
+    print(stock.index)
+    stock = stock[(stock.index >= start) & (stock.index <= end)]
+    print(stock)
+
     return stock.to_dict()
 
 # load_stock("GOOG")

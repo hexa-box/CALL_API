@@ -32,16 +32,25 @@ app = Flask(__name__)
 @app.route('/api/call/<fun_name>', methods=['GET'])
 def call(fun_name):
   
-    # Build a kwargs
-    tmp_args = []
-    for arg in request.args:
-        tmp_args.append(f'"{arg.strip()}": {request.args.get(arg)}')
-    args = "{ "+",".join(tmp_args)+" }"
-
     # Check if function call allowed
     if(fun_name not in allowed_call):
         return jsonify(error="Bad request", message=f"The {fun_name} function does not exist or is not allowed"), 400
     
+    # Get callabel function
+    if(fun_name in locals()):
+        fun_call = locals()[fun_name]
+    else:
+        fun_call = globals()[fun_name]
+
+    # Build a kwargs
+    tmp_args = []
+    needed_arg = list(map(lambda arg: arg["name"], get_signature(fun_call)["args"]))
+
+    for arg in request.args:
+        if arg in needed_arg:
+            tmp_args.append(f'"{arg.strip()}": {request.args.get(arg)}')
+    args = "{ "+",".join(tmp_args)+" }"
+
     # Check if args is a valide json 
     try:
         kwargs = json.loads(args)
@@ -49,13 +58,9 @@ def call(fun_name):
         return jsonify(error="Bad request", message=f"The json of the args variable is invalid"), 400
      
     # Execute called function 
-    if(fun_name in locals()):
-        fun_call = locals()[fun_name]
-    else:
-        fun_call = globals()[fun_name]
-
     result = None
     exception = None
+    result =  str(fun_call(**kwargs))
     try:
         result =  str(fun_call(**kwargs))
     except Exception as e:
@@ -70,14 +75,20 @@ def signature(fun_name):
    
     if(fun_name not in allowed_call):
         return jsonify(error="Bad request", message=f"The {fun_name} function does not exist or is not allowed"), 400
-    
-    sing = inspect.signature(globals()[fun_name])
+
+    return get_signature(globals()[fun_name])
+
+
+def get_signature(fun):
+
+    sing = inspect.signature(fun)
     args = list(map(lambda name: {'name': name,
                                   'type': sing.parameters[name].annotation.__name__ if sing.parameters[name].annotation != inspect._empty else None,
                                   'default': sing.parameters[name].default if sing.parameters[name].default != inspect._empty else None
                                   } ,sing.parameters))
     return {'args' : args, "type": sing.return_annotation.__name__}
-    
+
+
 # La commande pour la génération du certificat :
 # openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
 
