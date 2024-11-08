@@ -60,7 +60,7 @@ def call(fun_name):
     # Execute called function 
     result = None
     exception = None
-    result =  str(fun_call(**kwargs))
+   
     try:
         result =  str(fun_call(**kwargs))
     except Exception as e:

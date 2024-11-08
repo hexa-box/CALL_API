@@ -59,7 +59,7 @@ def get_stock(symbol: str = "MSFT",
 
     stock = stock[(stock.index >= start) & (stock.index <= end)]
 
-    return stock.to_dict()
+    return stock.to_dict('series')
 
 #load_stock("GOOG")
 #print(get_stock("GOOG", start="2024-11-05"))
