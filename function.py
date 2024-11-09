@@ -88,3 +88,6 @@ def get_stock(symbol: str = "MSFT",
 # investisement 
 # cacheflow 
 # 
+
+# le s&p 500 represent 80% du marché américain
+# le états unis produise 25% du PIB mondial 
