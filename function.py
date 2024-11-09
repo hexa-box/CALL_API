@@ -70,8 +70,8 @@ def load_stock(symbol: str = "MSFT") -> str:
     return True
 
 
-# https://localhost:5000/api/call/get_stock?symbol="MSFT"&start="2024-11-05"
-def get_stock(symbol: str = "MSFT",
+# https://localhost:5000/api/call/stock?symbol="MSFT"&start="2024-11-05"
+def stock(symbol: str = "MSFT",
               start: str = "1900-01-01", 
               end: str = "3000-01-01") -> str:
 
@@ -87,8 +87,8 @@ def get_stock(symbol: str = "MSFT",
 
 
 
-# https://localhost:5000/api/call/load_div?symbol="MSFT"
-def load_div(symbol: str = "MSFT") -> str:
+# https://localhost:5000/api/call/load_dividends?symbol="MSFT"
+def load_dividends(symbol: str = "MSFT") -> str:
     
     path = f"{DATA_PATH}/dividends/{symbol}"
     ticket = yf.Ticker(symbol)
@@ -119,8 +119,8 @@ def load_div(symbol: str = "MSFT") -> str:
     return True
     
 
-# https://localhost:5000/api/call/get_div?symbol="MSFT"
-def get_div(symbol: str = "MSFT") -> str:
+# https://localhost:5000/api/call/dividends?symbol="MSFT"
+def dividends(symbol: str = "MSFT") -> str:
 
     path = f"{DATA_PATH}/dividends/{symbol}"
     df_div = pd.read_parquet(path, engine='fastparquet')
@@ -131,14 +131,62 @@ def get_div(symbol: str = "MSFT") -> str:
     return df_div.to_dict('list')
 
 
+# https://localhost:5000/api/call/load_splits?symbol="MSFT"
+def load_splits(symbol: str = "MSFT") -> str:
+    
+    path = f"{DATA_PATH}/splits/{symbol}"
+    ticket = yf.Ticker(symbol)
+    
+    df_div = ticket.splits.to_frame()
+
+    if is_empty_dir(path):
+        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
+        append_mode = False
+    else:
+        os.remove(path+"/_metadata")
+        last_update = pd.read_parquet(
+            path, engine='fastparquet', columns=["Date"])["Date"].max()
+        append_mode = True
+
+    df_div = df_div[df_div.index > last_update.strftime('%Y-%m-%d')]
+    print(last_update)
+    print(df_div.shape[0])
+
+    df_div['partition'] = df_div.index
+    df_div['partition'] = pd.Categorical(
+        df_div['partition'].dt.strftime('%Y-%m'))
+    df_div.reset_index(drop=False, inplace=True)
+
+    df_div.to_parquet(path,  engine='fastparquet', partition_cols=[
+                    "partition"], append=append_mode)
+    
+    return True
+    
+
+# https://localhost:5000/api/call/splits?symbol="MSFT"
+def splits(symbol: str = "MSFT") -> str:
+
+    path = f"{DATA_PATH}/splits/{symbol}"
+    df_div = pd.read_parquet(path, engine='fastparquet')
+    df_div.set_index("Date", inplace=True)
+
+    df_div.reset_index(drop=False, inplace=True)
+    df_div["Date"] = df_div["Date"].dt.strftime('%Y-%m-%d')
+    return df_div.to_dict('list')
+
+
+
 
 #load_stock("GOOG")
-# data = get_stock("GOOG", start="2024-11-05")
+# data = stock("GOOG", start="2024-11-05")
 # print(data.keys())
 # print(json.dumps(data, indent = 4))
 
-#load_div()
-#pprint(get_div())
+load_dividends()
+pprint(dividends())
+
+#load_splits()
+#pprint(splits())
 
 
 # CA
