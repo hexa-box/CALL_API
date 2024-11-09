@@ -157,3 +157,5 @@ def get_div(symbol: str = "MSFT") -> str:
 
 # le s&p 500 represent 80% du marché américain
 # le états unis produise 25% du PIB mondial 
+# la capitalisation du cac 40 = 2 460 milliards d'euro en décembre 2023
+# la sum des capitalisation du S&P et de 50 000 milliard
