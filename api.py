@@ -2,6 +2,7 @@ from flask import Flask, request, abort, jsonify
 import configparser
 import inspect
 import json
+import traceback
 
 
 def embed(code):
@@ -72,7 +73,7 @@ def call(fun_name):
     try:
         result = fun_call(**kwargs)
     except Exception as e:
-        exception = str(e)
+        exception = traceback.format_exc()
 
     return {'result': result, 'exception': exception}
 
