@@ -3,10 +3,13 @@ import json
 import yfinance as yf
 import pandas as pd
 import datetime
+import os
+from pprint import pprint
 
 x = 20
 
-DATA_PATH = "data/"
+
+DATA_PATH = "data"
 
 
 def coucou(a: int) -> str:
@@ -26,6 +29,17 @@ def badfun(name):
     return not_exist_var
 
 
+#-----------------------------------------------------------------------------#
+
+def is_empty_dir(path):
+    if os.path.isdir(path):
+        if os.listdir(path):
+            return False
+        else:
+            return True
+    else:
+        return True
+
 # https://localhost:5000/api/call/load_stock?symbol="MSFT"
 def load_stock(symbol: str = "MSFT") -> str:
 
@@ -36,16 +50,19 @@ def load_stock(symbol: str = "MSFT") -> str:
     # get all stock info
     # ticker.info
 
-    try:
+    if is_empty_dir(path):
+        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
+        append_mode = False
+    else:
+        os.remove(path+"/_metadata")
         last_update = pd.read_parquet(
             path, engine='fastparquet', columns=["Date"])["Date"].max()
         append_mode = True
-    except FileNotFoundError:
-        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
-        append_mode = False
 
     hist = ticker.history(start=last_update.strftime('%Y-%m-%d'))
     hist = hist[hist.index > last_update.strftime('%Y-%m-%d')]
+    print(last_update.strftime('%Y-%m-%d'))
+    print(hist.shape[0])
 
     hist['partition'] = hist.index
     hist['partition'] = pd.Categorical(hist['partition'].dt.strftime('%Y-%m'))
@@ -73,10 +90,59 @@ def get_stock(symbol: str = "MSFT",
     return stock.to_dict('list')
 
 
-# load_stock("GOOG")
+
+# https://localhost:5000/api/call/load_div?symbol="MSFT"
+def load_div(symbol: str = "MSFT") -> str:
+    
+    path = f"{DATA_PATH}/dividends/{symbol}"
+    ticket = yf.Ticker(symbol)
+    
+    df_div = ticket.dividends.to_frame()
+
+    if is_empty_dir(path):
+        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
+        append_mode = False
+    else:
+        os.remove(path+"/_metadata")
+        last_update = pd.read_parquet(
+            path, engine='fastparquet', columns=["Date"])["Date"].max()
+        append_mode = True
+
+    df_div = df_div[df_div.index > last_update.strftime('%Y-%m-%d')]
+    print(last_update)
+    print(df_div.shape[0])
+
+    df_div['partition'] = df_div.index
+    df_div['partition'] = pd.Categorical(
+        df_div['partition'].dt.strftime('%Y-%m'))
+    df_div.reset_index(drop=False, inplace=True)
+
+    df_div.to_parquet(path,  engine='fastparquet', partition_cols=[
+                    "partition"], append=append_mode)
+    
+    return True
+    
+
+# https://localhost:5000/api/call/get_div?symbol="MSFT"
+def get_div(symbol: str = "MSFT") -> str:
+
+    path = f"{DATA_PATH}/dividends/{symbol}"
+    df_div = pd.read_parquet(path, engine='fastparquet')
+    df_div.set_index("Date", inplace=True)
+
+    df_div.reset_index(drop=False, inplace=True)
+    df_div["Date"] = df_div["Date"].dt.strftime('%Y-%m-%d')
+    return df_div.to_dict('list')
+
+
+
+#load_stock("GOOG")
 # data = get_stock("GOOG", start="2024-11-05")
 # print(data.keys())
 # print(json.dumps(data, indent = 4))
+
+#load_div()
+#pprint(get_div())
 
 
 # CA
