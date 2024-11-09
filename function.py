@@ -32,13 +32,9 @@ def badfun(name):
 #-----------------------------------------------------------------------------#
 
 def is_empty_dir(path):
-    if os.path.isdir(path):
-        if os.listdir(path):
-            return False
-        else:
-            return True
-    else:
-        return True
+    if os.path.isdir(path) and os.listdir(path):
+        return False
+    return True
 
 # https://localhost:5000/api/call/load_stock?symbol="MSFT"
 def load_stock(symbol: str = "MSFT") -> str:
