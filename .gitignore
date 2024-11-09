@@ -1,6 +1,8 @@
 config.ini
 cert/
 data/
+test.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

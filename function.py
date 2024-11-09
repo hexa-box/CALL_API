@@ -77,3 +77,14 @@ def get_stock(symbol: str = "MSFT",
 # data = get_stock("GOOG", start="2024-11-05")
 # print(data.keys())
 # print(json.dumps(data, indent = 4))
+
+
+# CA
+# resultat net 
+# fiscalité et taxe 
+# resultat d'exploitation 
+# dette
+# distripution des dividendes 
+# investisement 
+# cacheflow 
+# 
