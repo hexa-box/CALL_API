@@ -155,3 +155,7 @@ def get_div(symbol: str = "MSFT") -> str:
 # le états unis produise 25% du PIB mondial 
 # la capitalisation du cac 40 = 2 460 milliards d'euro en décembre 2023
 # la sum des capitalisation du S&P et de 50 000 milliard
+
+
+# base64.b64encode(pickle.dumps(["coucou", 6])).decode("ascii")
+# pickle.loads(base64.b64decode('gASVEAAAAAAAAABdlCiMBmNvdWNvdZRLBmUu'.encode("ascii")))
