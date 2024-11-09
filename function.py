@@ -29,7 +29,7 @@ def badfun(name):
     return not_exist_var
 
 
-#-----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 
 def is_empty_dir(path):
     if os.path.isdir(path) and os.listdir(path):
@@ -37,6 +37,8 @@ def is_empty_dir(path):
     return True
 
 # https://localhost:5000/api/call/load_stock?symbol="MSFT"
+
+
 def load_stock(symbol: str = "MSFT") -> str:
 
     path = f"{DATA_PATH}/stocks/{symbol}"
@@ -72,8 +74,8 @@ def load_stock(symbol: str = "MSFT") -> str:
 
 # https://localhost:5000/api/call/stock?symbol="MSFT"&start="2024-11-05"
 def stock(symbol: str = "MSFT",
-              start: str = "1900-01-01", 
-              end: str = "3000-01-01") -> str:
+          start: str = "1900-01-01",
+          end: str = "3000-01-01") -> str:
 
     path = f"{DATA_PATH}/stocks/{symbol}"
     stock = pd.read_parquet(path, engine='fastparquet')
@@ -86,13 +88,12 @@ def stock(symbol: str = "MSFT",
     return stock.to_dict('list')
 
 
-
 # https://localhost:5000/api/call/load_dividends?symbol="MSFT"
 def load_dividends(symbol: str = "MSFT") -> str:
-    
+
     path = f"{DATA_PATH}/dividends/{symbol}"
     ticket = yf.Ticker(symbol)
-    
+
     df_div = ticket.dividends.to_frame()
 
     if is_empty_dir(path):
@@ -114,10 +115,10 @@ def load_dividends(symbol: str = "MSFT") -> str:
     df_div.reset_index(drop=False, inplace=True)
 
     df_div.to_parquet(path,  engine='fastparquet', partition_cols=[
-                    "partition"], append=append_mode)
-    
+        "partition"], append=append_mode)
+
     return True
-    
+
 
 # https://localhost:5000/api/call/dividends?symbol="MSFT"
 def dividends(symbol: str = "MSFT") -> str:
@@ -133,10 +134,10 @@ def dividends(symbol: str = "MSFT") -> str:
 
 # https://localhost:5000/api/call/load_splits?symbol="MSFT"
 def load_splits(symbol: str = "MSFT") -> str:
-    
+
     path = f"{DATA_PATH}/splits/{symbol}"
     ticket = yf.Ticker(symbol)
-    
+
     df_div = ticket.splits.to_frame()
 
     if is_empty_dir(path):
@@ -158,10 +159,10 @@ def load_splits(symbol: str = "MSFT") -> str:
     df_div.reset_index(drop=False, inplace=True)
 
     df_div.to_parquet(path,  engine='fastparquet', partition_cols=[
-                    "partition"], append=append_mode)
-    
+        "partition"], append=append_mode)
+
     return True
-    
+
 
 # https://localhost:5000/api/call/splits?symbol="MSFT"
 def splits(symbol: str = "MSFT") -> str:
@@ -175,32 +176,30 @@ def splits(symbol: str = "MSFT") -> str:
     return df_div.to_dict('list')
 
 
-
-
-#load_stock("GOOG")
+# load_stock("GOOG")
 # data = stock("GOOG", start="2024-11-05")
 # print(data.keys())
 # print(json.dumps(data, indent = 4))
 
-load_dividends()
-pprint(dividends())
+# load_dividends()
+# pprint(dividends())
 
-#load_splits()
-#pprint(splits())
+# load_splits()
+# pprint(splits())
 
 
 # CA
-# resultat net 
-# fiscalité et taxe 
-# resultat d'exploitation 
+# resultat net
+# fiscalité et taxe
+# resultat d'exploitation
 # dette
-# distripution des dividendes 
-# investisement 
-# cacheflow 
-# 
+# distripution des dividendes
+# investisement
+# cacheflow
+#
 
 # le s&p 500 represent 80% du marché américain
-# le états unis produise 25% du PIB mondial 
+# le états unis produise 25% du PIB mondial
 # la capitalisation du cac 40 = 2 460 milliards d'euro en décembre 2023
 # la sum des capitalisation du S&P et de 50 000 milliard
 
