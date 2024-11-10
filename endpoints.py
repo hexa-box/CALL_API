@@ -246,9 +246,8 @@ def quarterly_income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
         '%Y-%m-%d')
     return data
 
+
 # https://localhost:5000/api/call/SP500
-
-
 def SP500() -> pd.core.frame.DataFrame:
 
     list_sp500 = pd.read_csv(
@@ -363,21 +362,21 @@ def quarterly_cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 # load_quarterly_income()
 # pprint(quarterly_income())
 
-if __name__ == '__main__':
-
-    for symbol in list(SP500()["Symbol"]):
-        load_stock(symbol)
-        load_dividends(symbol)
-        load_splits(symbol)
-        load_income(symbol)
-        load_quarterly_income(symbol)
-        load_cashflow(symbol)
-        load_quarterly_cashflow(symbol)
-
-    exit(0)
-
-    msft = yf.Ticker("MSFT")
-    pprint(msft.calendar)
+#if __name__ == '__main__':
+#
+#    for symbol in list(SP500()["Symbol"]):
+#        load_stock(symbol)
+#        load_dividends(symbol)
+#        load_splits(symbol)
+#        load_income(symbol)
+#        load_quarterly_income(symbol)
+#        load_cashflow(symbol)
+#        load_quarterly_cashflow(symbol)
+#
+#    exit(0)
+#
+#    msft = yf.Ticker("MSFT")
+#    pprint(msft.calendar)
 
 # TODO: a finir
 # msft.balance_sheet

@@ -72,7 +72,8 @@ def call(fun_name):
     exception = None
 
     try:
-        result = fun_call(**kwargs)
+        # TODO: Ajouter une meta variable _output_format = ("str" | "binary" | "dict" | "to_dict(list)" ... etc)
+        result = str(fun_call(**kwargs))
     except Exception as e:
         exception = traceback.format_exc()
 
