@@ -399,8 +399,3 @@ def quarterly_cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 # le états unis produise 25% du PIB mondial
 # la capitalisation du cac 40 = 2 460 milliards d'euro en décembre 2023
 # la sum des capitalisation du S&P et de 50 000 milliard
-
-
-# TODO: ajouter une option pour renvoyer la valeur binaire en base64
-# base64.b64encode(pickle.dumps(["coucou", 6])).decode("ascii")
-# pickle.loads(base64.b64decode('gASVEAAAAAAAAABdlCiMBmNvdWNvdZRLBmUu'.encode("ascii")))
