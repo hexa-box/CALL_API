@@ -20,13 +20,14 @@ def embed(code):
 
 
 allowed_call = embed(open("function.py").read())
-allowed_call2 = embed(code="""
+allowed_call2 = embed(open("endpoints.py").read())
+allowed_call3 = embed(code="""
 def hello3(name):
     return "Hello 3 "+name
 """)
-allowed_call = allowed_call.union(allowed_call2)
+allowed_call = allowed_call.union(allowed_call2).union(allowed_call3)
 
-print(allowed_call)
+print(f"Duthorised call: {str(allowed_call)}")
 
 app = Flask(__name__)
 
@@ -104,7 +105,14 @@ def get_signature(fun):
                  if sing.parameters[name].default != inspect._empty
                  else None)
              }, sing.parameters))
-    return {'args': args, "type": sing.return_annotation.__name__}
+
+    return_type = (sing.return_annotation.__name__
+                   if str(sing.return_annotation.__module__) == "builtins"
+                   else (sing.return_annotation.__module__ +
+                         '.'+sing.return_annotation.__name__))
+
+    return {'args': args,
+            "type": return_type}
 
 
 # La commande pour la génération du certificat :
