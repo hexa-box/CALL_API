@@ -22,7 +22,7 @@ def is_empty_dir(path):
     return True
 
 
-# https://localhost:5000/api/call/load_stock?symbol="MSFT"
+# https://localhost:5000/api/call/load_stock?symbol="MSFT"&_output_format=str
 def load_stock(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/stocks/{symbol}"
@@ -55,7 +55,7 @@ def load_stock(symbol: str = "MSFT"):
                     "partition"], append=append_mode)
 
 
-# https://localhost:5000/api/call/stock?symbol="MSFT"&start="2024-11-05"
+# https://localhost:5000/api/call/stock?symbol="MSFT"&start="2024-11-05"&_output_format=str
 def stock(symbol: str = "MSFT",
           start: str = "1900-01-01",
           end: str = "3000-01-01") -> pd.core.frame.DataFrame:
@@ -71,7 +71,7 @@ def stock(symbol: str = "MSFT",
     return data
 
 
-# https://localhost:5000/api/call/load_dividends?symbol="MSFT"
+# https://localhost:5000/api/call/load_dividends?symbol="MSFT"&_output_format=str
 def load_dividends(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/dividends/{symbol}"
@@ -102,7 +102,7 @@ def load_dividends(symbol: str = "MSFT"):
         "partition"], append=append_mode)
 
 
-# https://localhost:5000/api/call/dividends?symbol="MSFT"
+# https://localhost:5000/api/call/dividends?symbol="MSFT"&_output_format=str
 def dividends(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 
     path = f"{DATA_PATH}/dividends/{symbol}"
@@ -114,7 +114,7 @@ def dividends(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
     return data
 
 
-# https://localhost:5000/api/call/load_splits?symbol="MSFT"
+# https://localhost:5000/api/call/load_splits?symbol="MSFT"&_output_format=str
 def load_splits(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/splits/{symbol}"
@@ -145,7 +145,7 @@ def load_splits(symbol: str = "MSFT"):
         "partition"], append=append_mode)
 
 
-# https://localhost:5000/api/call/splits?symbol="MSFT"
+# https://localhost:5000/api/call/splits?symbol="MSFT"&_output_format=str
 def splits(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 
     path = f"{DATA_PATH}/splits/{symbol}"
@@ -157,7 +157,7 @@ def splits(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
     return data
 
 
-# https://localhost:5000/api/call/load_income?symbol="MSFT"
+# https://localhost:5000/api/call/load_income?symbol="MSFT"&_output_format=str
 def load_income(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/income_stmt/{symbol}"
@@ -189,7 +189,7 @@ def load_income(symbol: str = "MSFT"):
         "partition"], append=append_mode)
 
 
-# https://localhost:5000/api/call/income?symbol="MSFT"
+# https://localhost:5000/api/call/income?symbol="MSFT"&_output_format=str
 def income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 
     path = f"{DATA_PATH}/income_stmt/{symbol}"
@@ -201,7 +201,7 @@ def income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
     return data
 
 
-# https://localhost:5000/api/call/load_quarterly_income?symbol="MSFT"
+# https://localhost:5000/api/call/load_quarterly_income?symbol="MSFT"&_output_format=str
 def load_quarterly_income(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/quarterly_income_stmt/{symbol}"
@@ -234,7 +234,7 @@ def load_quarterly_income(symbol: str = "MSFT"):
         "partition"], append=append_mode)
 
 
-# https://localhost:5000/api/call/quarterly_income?symbol="MSFT"
+# https://localhost:5000/api/call/quarterly_income?symbol="MSFT"&_output_format=str
 def quarterly_income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 
     path = f"{DATA_PATH}/quarterly_income_stmt/{symbol}"
@@ -247,7 +247,7 @@ def quarterly_income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
     return data
 
 
-# https://localhost:5000/api/call/SP500
+# https://localhost:5000/api/call/SP500&_output_format=str
 def SP500() -> pd.core.frame.DataFrame:
 
     list_sp500 = pd.read_csv(
@@ -256,7 +256,7 @@ def SP500() -> pd.core.frame.DataFrame:
     return list_sp500
 
 
-# https://localhost:5000/api/call/load_cashflow?symbol="MSFT"
+# https://localhost:5000/api/call/load_cashflow?symbol="MSFT"&_output_format=str
 def load_cashflow(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/cashflow/{symbol}"
@@ -289,7 +289,7 @@ def load_cashflow(symbol: str = "MSFT"):
         "partition"], append=append_mode)
 
 
-# https://localhost:5000/api/call/cashflow?symbol="MSFT"
+# https://localhost:5000/api/call/cashflow?symbol="MSFT"&_output_format=str
 def cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 
     path = f"{DATA_PATH}/cashflow/{symbol}"
@@ -302,7 +302,7 @@ def cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
     return df_cashflow
 
 
-# https://localhost:5000/api/call/load_quarterly_cashflow?symbol="MSFT"
+# https://localhost:5000/api/call/load_quarterly_cashflow?symbol="MSFT"&_output_format=str
 def load_quarterly_cashflow(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/quarterly_cashflow/{symbol}"
@@ -335,7 +335,7 @@ def load_quarterly_cashflow(symbol: str = "MSFT"):
         "partition"], append=append_mode)
 
 
-# https://localhost:5000/api/call/quarterly_cashflow?symbol="MSFT"
+# https://localhost:5000/api/call/quarterly_cashflow?symbol="MSFT"&_output_format=str
 def quarterly_cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 
     path = f"{DATA_PATH}/quarterly_cashflow/{symbol}"
@@ -362,7 +362,7 @@ def quarterly_cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 # load_quarterly_income()
 # pprint(quarterly_income())
 
-#if __name__ == '__main__':
+# if __name__ == '__main__':
 #
 #    for symbol in list(SP500()["Symbol"]):
 #        load_stock(symbol)

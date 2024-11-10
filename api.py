@@ -3,6 +3,8 @@ import configparser
 import inspect
 import json
 import traceback
+import pickle
+import base64
 
 
 def embed(code):
@@ -72,10 +74,23 @@ def call(fun_name):
     exception = None
 
     try:
-        # TODO: Ajouter une meta variable _output_format = ("str" | "binary" | "dict" | "to_dict(list)" ... etc)
-        result = str(fun_call(**kwargs))
+        if "_output_format" in request.args:
+            output_format = request.args.get("_output_format")
+            if output_format == "str":
+                result = str(fun_call(**kwargs))
+            elif output_format == "binary":
+                # pickle.loads(base64.b64decode('xxxx'.encode("ascii")))
+                result = base64.b64encode(
+                    pickle.dumps(fun_call(**kwargs))).decode("ascii")
+            elif output_format == "to_dict(list)":
+                result = fun_call(**kwargs).to_dict("list")
+            else:
+                raise Exception("Unexpected value for _output_format")
+        else:
+            result = fun_call(**kwargs)
     except Exception as e:
         exception = traceback.format_exc()
+        result = None
 
     return {'result': result, 'exception': exception}
 
