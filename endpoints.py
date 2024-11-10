@@ -21,6 +21,7 @@ def load_stock(symbol: str = "MSFT") -> str:
 
     path = f"{DATA_PATH}/stocks/{symbol}"
 
+    print(f"Loanding stock : {symbol}")
     ticker = yf.Ticker(symbol)
 
     # get all stock info
@@ -248,7 +249,9 @@ def quarterly_income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 
 # https://localhost:5000/api/call/SP500
 def SP500()-> pd.core.frame.DataFrame:
-    return pd.read_csv('https://datahub.io/core/s-and-p-500-companies/_r/-/data/constituents.csv') 
+    list_sp500 = pd.read_csv('https://datahub.io/core/s-and-p-500-companies/_r/-/data/constituents.csv')
+    list_sp500['Symbol'] = list_sp500['Symbol'].str.replace('.', '-')
+    return list_sp500
 
 
 
@@ -267,8 +270,10 @@ def SP500()-> pd.core.frame.DataFrame:
 #pprint(quarterly_income())
 
 
-pprint(list(SP500()["Symbol"]))
+for symbol in list(SP500()["Symbol"]):
+    load_stock(symbol)
 
+exit(0)
 
 msft = yf.Ticker("MSFT")
 
