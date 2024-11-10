@@ -7,29 +7,31 @@ import pickle
 import base64
 
 
+ALLOWED_CALL = set()
+
+
 def embed(code):
 
+    global ALLOWED_CALL
     old_globals = set(globals().keys())
     exec(code, globals())
     new_globals = set(globals().keys())
-    allowed_call = new_globals-old_globals - \
-        set(["__warningregistry__", "old_globals"])
+    new_call = new_globals-old_globals
     # Filter no callable symbol
-    allowed_call = set(
-        filter(lambda symbol: callable(globals()[symbol]), allowed_call))
+    new_call = set(
+        filter(lambda symbol: inspect.isfunction(globals()[symbol]), new_call))
+    ALLOWED_CALL = ALLOWED_CALL.union(new_call)
 
-    return allowed_call
 
-
-allowed_call = embed(open("function.py").read())
-allowed_call2 = embed(open("endpoints.py").read())
-allowed_call3 = embed(code="""
+embed(open("function.py").read())
+embed(open("endpoints.py").read())
+embed(code="""
 def hello3(name):
     return "Hello 3 "+name
 """)
-allowed_call = allowed_call.union(allowed_call2).union(allowed_call3)
 
-print(f"Duthorised call: {str(allowed_call)}")
+
+print(f"Authorised call: {str(ALLOWED_CALL)}")
 
 app = Flask(__name__)
 
@@ -40,7 +42,7 @@ app = Flask(__name__)
 def call(fun_name):
 
     # Check if function call allowed
-    if (fun_name not in allowed_call):
+    if (fun_name not in ALLOWED_CALL):
         return jsonify(error="Bad request",
                        message=f"The {fun_name} "
                        "function does not exist or is not allowed"), 400
@@ -99,7 +101,7 @@ def call(fun_name):
 @app.route('/api/signature/<fun_name>', methods=['GET'])
 def signature(fun_name):
 
-    if (fun_name not in allowed_call):
+    if (fun_name not in ALLOWED_CALL):
         return jsonify(error="Bad request",
                        message=f"The {fun_name} "
                        "function does not exist or is not allowed"), 400
