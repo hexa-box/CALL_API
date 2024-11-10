@@ -246,6 +246,11 @@ def quarterly_income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
         '%Y-%m-%d')
     return df_quarterly_income.to_dict('list')
 
+# https://localhost:5000/api/call/SP500
+def SP500()-> pd.core.frame.DataFrame:
+    return pd.read_csv('https://datahub.io/core/s-and-p-500-companies/_r/-/data/constituents.csv') 
+
+
 
 # load_stock()
 # data = stock(start="2024-11-05")
@@ -262,12 +267,17 @@ def quarterly_income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 #pprint(quarterly_income())
 
 
+pprint(list(SP500()["Symbol"]))
+
 
 msft = yf.Ticker("MSFT")
 
 pprint(msft.calendar)
 
 # TODO: a finir 
+
+# liste du s&p 500 : https://datahub.io/core/s-and-p-500-companies/_r/-/data/constituents.csv
+
 #msft.balance_sheet
 #msft.quarterly_balance_sheet
 ## - cash flow statement
