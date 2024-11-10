@@ -71,6 +71,7 @@ def stock(symbol: str = "MSFT",
 def load_dividends(symbol: str = "MSFT") -> str:
 
     path = f"{DATA_PATH}/dividends/{symbol}"
+    print(f"Loanding dividends : {symbol}")
     ticket = yf.Ticker(symbol)
 
     df_div = ticket.dividends.to_frame()
@@ -115,6 +116,7 @@ def dividends(symbol: str = "MSFT") -> str:
 def load_splits(symbol: str = "MSFT") -> str:
 
     path = f"{DATA_PATH}/splits/{symbol}"
+    print(f"Loanding splits : {symbol}")
     ticket = yf.Ticker(symbol)
 
     df_div = ticket.splits.to_frame()
@@ -159,6 +161,7 @@ def splits(symbol: str = "MSFT") -> str:
 def load_income(symbol: str = "MSFT") -> str:
 
     path = f"{DATA_PATH}/income_stmt/{symbol}"
+    print(f"Loanding income_stmt : {symbol}")
     ticket = yf.Ticker(symbol)
 
     df_income = ticket.income_stmt.transpose()
@@ -205,6 +208,7 @@ def income(symbol: str = "MSFT") -> str:
 def load_quarterly_income(symbol: str = "MSFT") -> str:
 
     path = f"{DATA_PATH}/quarterly_income_stmt/{symbol}"
+    print(f"Loanding quarterly_income_stmt : {symbol}")
     ticket = yf.Ticker(symbol)
 
     df_quarterly_income = ticket.quarterly_income_stmt.transpose()
