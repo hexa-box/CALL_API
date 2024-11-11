@@ -677,22 +677,6 @@ def loader_SP500():
         load_calendar(symbol)
         load_shares(symbol)
 
-
-# load_stock()
-# data = stock(start="2024-11-05")
-
-# load_dividends()
-# pprint(dividends())
-
-# load_splits()
-# pprint(splits())
-
-# load_income()
-# pprint(income())
-# load_quarterly_income()
-# pprint(quarterly_income())
-
-
 # loader_SP500()
 
 # load_gold()
@@ -729,7 +713,7 @@ exit()
 #    time.sleep(2)
 
 # -----------------------------------------------------------------------------#
-#
+
 msft = yf.Ticker("MSFT")
 pprint(msft.get_shares_full(start="2022-01-01", end=None))
 
