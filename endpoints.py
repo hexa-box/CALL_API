@@ -1,10 +1,30 @@
 import os
+import sys
 import json
 import datetime
 import yfinance as yf
 import pandas as pd
 from pprint import pprint
+import logging
+from logging.handlers import RotatingFileHandler
+import traceback
+import threading
+import time
 
+
+LOG_PATH = "loader.log"
+LOG = logging.getLogger("Rotating Log")
+LOG.setLevel(logging.INFO)
+log_formatter = logging.Formatter(
+    '[%(asctime)s][%(levelname)s] %(message)s')
+
+handler = RotatingFileHandler(LOG_PATH,
+                              maxBytes=1*1024*1024,
+                              backupCount=2)
+
+handler.setFormatter(log_formatter)
+# handler = logging.StreamHandler(sys.stdout)
+LOG.addHandler(handler)
 
 DATA_PATH = "data"
 
@@ -30,14 +50,12 @@ def load_stock(symbol: str = "MSFT"):
     print(f"Loanding stock : {symbol}")
     ticker = yf.Ticker(symbol)
 
-    # get all stock info
-    # ticker.info
-
     if is_empty_dir(path):
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
     else:
-        os.remove(path+"/_metadata")
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
         last_update = pd.read_parquet(
             path, engine='fastparquet', columns=["Date"])["Date"].max()
         append_mode = True
@@ -75,7 +93,7 @@ def stock(symbol: str = "MSFT",
 def load_dividends(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/dividends/{symbol}"
-    print(f"Loanding dividends : {symbol}")
+    LOG.info(f"Loanding dividends : {symbol}")
     ticket = yf.Ticker(symbol)
 
     data = ticket.dividends.to_frame()
@@ -84,14 +102,15 @@ def load_dividends(symbol: str = "MSFT"):
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
     else:
-        os.remove(path+"/_metadata")
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
         last_update = pd.read_parquet(
             path, engine='fastparquet', columns=["Date"])["Date"].max()
         append_mode = True
 
     data = data[data.index > last_update.strftime('%Y-%m-%d')]
-    print(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
-    print(f"Number new lines: {str(data.shape[0])}")
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
 
     data['partition'] = data.index
     data['partition'] = pd.Categorical(
@@ -127,7 +146,8 @@ def load_splits(symbol: str = "MSFT"):
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
     else:
-        os.remove(path+"/_metadata")
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
         last_update = pd.read_parquet(
             path, engine='fastparquet', columns=["Date"])["Date"].max()
         append_mode = True
@@ -171,7 +191,8 @@ def load_income(symbol: str = "MSFT"):
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
     else:
-        os.remove(path+"/_metadata")
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
         last_update = pd.read_parquet(
             path, engine='fastparquet', columns=["Date"])["Date"].max()
         append_mode = True
@@ -215,7 +236,8 @@ def load_quarterly_income(symbol: str = "MSFT"):
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
     else:
-        os.remove(path+"/_metadata")
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
         last_update = pd.read_parquet(
             path, engine='fastparquet', columns=["Date"])["Date"].max()
         append_mode = True
@@ -270,7 +292,8 @@ def load_cashflow(symbol: str = "MSFT"):
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
     else:
-        os.remove(path+"/_metadata")
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
         last_update = pd.read_parquet(
             path, engine='fastparquet', columns=["Date"])["Date"].max()
         append_mode = True
@@ -316,7 +339,8 @@ def load_quarterly_cashflow(symbol: str = "MSFT"):
         last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
         append_mode = False
     else:
-        os.remove(path+"/_metadata")
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
         last_update = pd.read_parquet(
             path, engine='fastparquet', columns=["Date"])["Date"].max()
         append_mode = True
@@ -348,6 +372,17 @@ def quarterly_cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
     return data
 
 
+def loader_SP500():
+    for symbol in list(SP500()["Symbol"]):
+        # load_stock(symbol)
+        load_dividends(symbol)
+        # load_splits(symbol)
+        # load_income(symbol)
+        # load_quarterly_income(symbol)
+        # load_cashflow(symbol)
+        # load_quarterly_cashflow(symbol)
+
+
 # load_stock()
 # data = stock(start="2024-11-05")
 
@@ -362,18 +397,32 @@ def quarterly_cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 # load_quarterly_income()
 # pprint(quarterly_income())
 
-# if __name__ == '__main__':
-#
-#    for symbol in list(SP500()["Symbol"]):
-#        load_stock(symbol)
-#        load_dividends(symbol)
-#        load_splits(symbol)
-#        load_income(symbol)
-#        load_quarterly_income(symbol)
-#        load_cashflow(symbol)
-#        load_quarterly_cashflow(symbol)
-#
-#    exit(0)
+# loader_SP500()
+
+
+def scheduler():
+    cpt = 5
+    while True:
+        try:
+            t = 5/cpt
+            cpt -= 1
+            LOG.info("I'm running")
+            print("I'm running")
+            time.sleep(1)
+        except Exception as e:
+            exception = traceback.format_exc()
+            LOG.error(exception)
+            time.sleep(10)
+
+
+threading.Thread(target=scheduler).start()
+
+
+while True:
+    print("exec api")
+    time.sleep(2)
+
+
 #
 #    msft = yf.Ticker("MSFT")
 #    pprint(msft.calendar)
