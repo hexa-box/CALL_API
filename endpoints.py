@@ -11,6 +11,8 @@ import traceback
 import threading
 import time
 import numpy as np
+import requests
+import configparser
 
 
 LOG_PATH = "loader.log"
@@ -582,18 +584,83 @@ def shares(symbol: str = "MSFT",
     data["Date"] = data["Date"].dt.strftime('%Y-%m-%d')
     return data
 
+
 # https://localhost:5000/api/call/load_gold
-
-
 def load_gold():
     load_stock("GC=F")
 
+
 # https://localhost:5000/api/call/gold&start="2024-11-05"&_output_format=str
-
-
 def gold(start: str = "1900-01-01",
          end: str = "3000-01-01") -> pd.core.frame.DataFrame:
     return stock("GC=F")
+
+
+# https://localhost:5000/api/call/load_fedfunds&_output_format=str
+def load_fedfunds():
+
+    start_date = "1954-07-01"
+    end_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    path = f"{DATA_PATH}/fedfunds"
+
+    LOG.info(f"Loanding fedfunds")
+
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    api_key = config.get("MAIN", "fed.key.api", fallback="")
+
+    url = "https://api.stlouisfed.org/fred/series/observations"
+    params = {
+        "series_id": "FEDFUNDS",
+        "api_key": api_key,
+        "file_type": "json",
+        "observation_start": start_date,
+        "observation_end": end_date
+    }
+
+    response = requests.get(url, params=params)
+
+    data = response.json()
+    data = data.get("observations", [])
+    tmp_data = {"Date": [], "value": []}
+    for line in data:
+        tmp_data["Date"].append(pd.Timestamp(line["date"]))
+        tmp_data["value"].append(line["value"])
+
+    data = pd.DataFrame.from_dict(tmp_data)
+    data = data.set_index("Date")
+
+    if is_empty_dir(path):
+        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
+        append_mode = False
+    else:
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
+        last_update = pd.read_parquet(
+            path, engine='fastparquet', columns=["Date"])["Date"].max()
+        append_mode = True
+
+    data = data[data.index > last_update.strftime('%Y-%m-%d')]
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
+
+    data['partition'] = data.index
+    data['partition'] = pd.Categorical(data['partition'].dt.strftime('%Y-%m'))
+    data.reset_index(drop=False, inplace=True)
+    data.to_parquet(path,  engine='fastparquet', partition_cols=["partition"],
+                    append=append_mode)
+
+
+# https://localhost:5000/api/call/fedfunds?_output_format=str
+def fedfunds() -> pd.core.frame.DataFrame:
+
+    path = f"{DATA_PATH}/fedfunds"
+    data = pd.read_parquet(path, engine='fastparquet')
+    data.set_index("Date", inplace=True)
+    data.reset_index(drop=False, inplace=True)
+    data["Date"] = data["Date"].dt.strftime('%Y-%m-%d')
+    return data
 
 
 def loader_SP500():
@@ -626,10 +693,15 @@ def loader_SP500():
 # pprint(quarterly_income())
 
 
-loader_SP500()
+# loader_SP500()
 
-#load_gold()
-#print(gold)
+# load_gold()
+# print(gold)
+
+
+load_fedfunds()
+print(fedfunds())
+
 
 exit()
 
@@ -664,16 +736,14 @@ pprint(msft.get_shares_full(start="2022-01-01", end=None))
 
 # TODO: a finir
 # les taux de la fed
-
+# les taux d'inflation au usa
+# la courbe du chomage au usa
 
 # CA
-# resultat net
 # fiscalité et taxe
 # resultat d'exploitation
 # dette
-# distripution des dividendes
 # investisement
-# cacheflow
 # les taux de la BCE
 
 
