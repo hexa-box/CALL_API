@@ -683,11 +683,11 @@ def loader_SP500():
 # print(gold)
 
 
-load_fedfunds()
-print(fedfunds())
+#load_fedfunds()
+#print(fedfunds())
 
 
-exit()
+#exit()
 
 # -----------------------------------------------------------------------------#
 # def scheduler():
@@ -715,7 +715,7 @@ exit()
 # -----------------------------------------------------------------------------#
 
 msft = yf.Ticker("MSFT")
-pprint(msft.get_shares_full(start="2022-01-01", end=None))
+pprint(msft.earnings_dates)
 
 
 # TODO: a finir
@@ -723,11 +723,11 @@ pprint(msft.get_shares_full(start="2022-01-01", end=None))
 # les taux d'inflation au usa
 # la courbe du chomage au usa
 
-# CA
 # fiscalité et taxe
 # resultat d'exploitation
 # dette
 # investisement
+# Liste des symbol cac40
 # les taux de la BCE
 
 
