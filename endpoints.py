@@ -10,6 +10,7 @@ from logging.handlers import RotatingFileHandler
 import traceback
 import threading
 import time
+import numpy as np
 
 
 LOG_PATH = "loader.log"
@@ -23,7 +24,7 @@ handler = RotatingFileHandler(LOG_PATH,
                               backupCount=2)
 
 handler.setFormatter(log_formatter)
-# handler = logging.StreamHandler(sys.stdout)
+handler = logging.StreamHandler(sys.stdout)
 LOG.addHandler(handler)
 
 DATA_PATH = "data"
@@ -47,7 +48,7 @@ def load_stock(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/stocks/{symbol}"
 
-    print(f"Loanding stock : {symbol}")
+    LOG.info(f"Loanding stock : {symbol}")
     ticker = yf.Ticker(symbol)
 
     if is_empty_dir(path):
@@ -62,8 +63,8 @@ def load_stock(symbol: str = "MSFT"):
 
     data = ticker.history(start=last_update.strftime('%Y-%m-%d'))
     data = data[data.index > last_update.strftime('%Y-%m-%d')]
-    print(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
-    print(f"Number new lines: {str(data.shape[0])}")
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
 
     data['partition'] = data.index
     data['partition'] = pd.Categorical(data['partition'].dt.strftime('%Y-%m'))
@@ -137,7 +138,7 @@ def dividends(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 def load_splits(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/splits/{symbol}"
-    print(f"Loanding splits : {symbol}")
+    LOG.info(f"Loanding splits : {symbol}")
     ticket = yf.Ticker(symbol)
 
     data = ticket.splits.to_frame()
@@ -153,8 +154,8 @@ def load_splits(symbol: str = "MSFT"):
         append_mode = True
 
     data = data[data.index > last_update.strftime('%Y-%m-%d')]
-    print(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
-    print(f"Number new lines: {str(data.shape[0])}")
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
 
     data['partition'] = data.index
     data['partition'] = pd.Categorical(
@@ -181,7 +182,7 @@ def splits(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 def load_income(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/income_stmt/{symbol}"
-    print(f"Loanding income_stmt : {symbol}")
+    LOG.info(f"Loanding income_stmt : {symbol}")
     ticket = yf.Ticker(symbol)
 
     data = ticket.income_stmt.transpose()
@@ -198,8 +199,8 @@ def load_income(symbol: str = "MSFT"):
         append_mode = True
 
     data = data[data.index > last_update.strftime('%Y-%m-%d')]
-    print(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
-    print(f"Number new lines: {str(data.shape[0])}")
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
 
     data['partition'] = data.index
     data['partition'] = pd.Categorical(
@@ -226,7 +227,7 @@ def income(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 def load_quarterly_income(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/quarterly_income_stmt/{symbol}"
-    print(f"Loanding quarterly_income_stmt : {symbol}")
+    LOG.info(f"Loanding quarterly_income_stmt : {symbol}")
     ticket = yf.Ticker(symbol)
 
     data = ticket.quarterly_income_stmt.transpose()
@@ -244,8 +245,8 @@ def load_quarterly_income(symbol: str = "MSFT"):
 
     data = data[data.index > last_update.strftime(
         '%Y-%m-%d')]
-    print(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
-    print(f"Number new lines: {str(data.shape[0])}")
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
 
     data['partition'] = data.index
     data['partition'] = pd.Categorical(
@@ -282,7 +283,7 @@ def SP500() -> pd.core.frame.DataFrame:
 def load_cashflow(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/cashflow/{symbol}"
-    print(f"Loanding cashflow : {symbol}")
+    LOG.info(f"Loanding cashflow : {symbol}")
     ticket = yf.Ticker(symbol)
 
     data = ticket.cashflow.transpose()
@@ -300,8 +301,8 @@ def load_cashflow(symbol: str = "MSFT"):
 
     data = data[data.index > last_update.strftime(
         '%Y-%m-%d')]
-    print(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
-    print(f"Number new lines: {str(data.shape[0])}")
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
 
     data['partition'] = data.index
     data['partition'] = pd.Categorical(
@@ -329,7 +330,7 @@ def cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
 def load_quarterly_cashflow(symbol: str = "MSFT"):
 
     path = f"{DATA_PATH}/quarterly_cashflow/{symbol}"
-    print(f"Loanding quarterly_cashflow : {symbol}")
+    LOG.info(f"Loanding quarterly_cashflow : {symbol}")
     ticket = yf.Ticker(symbol)
 
     data = ticket.quarterly_cashflow.transpose()
@@ -347,8 +348,8 @@ def load_quarterly_cashflow(symbol: str = "MSFT"):
 
     data = data[data.index > last_update.strftime(
         '%Y-%m-%d')]
-    print(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
-    print(f"Number new lines: {str(data.shape[0])}")
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
 
     data['partition'] = data.index
     data['partition'] = pd.Categorical(
@@ -372,15 +373,242 @@ def quarterly_cashflow(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
     return data
 
 
+# https://localhost:5000/api/call/load_balance_sheet?symbol="MSFT"&_output_format=str
+def load_balance_sheet(symbol: str = "MSFT"):
+
+    path = f"{DATA_PATH}/balance_sheet/{symbol}"
+    LOG.info(f"Loanding balance_sheet : {symbol}")
+    ticket = yf.Ticker(symbol)
+
+    data = ticket.balance_sheet.transpose()
+    data.index.names = ['Date']
+
+    if is_empty_dir(path):
+        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
+        append_mode = False
+    else:
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
+        last_update = pd.read_parquet(
+            path, engine='fastparquet', columns=["Date"])["Date"].max()
+        append_mode = True
+
+    data = data[data.index > last_update.strftime(
+        '%Y-%m-%d')]
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
+
+    data['partition'] = data.index
+    data['partition'] = pd.Categorical(
+        data['partition'].dt.strftime('%Y-%m'))
+    data.reset_index(drop=False, inplace=True)
+
+    data.to_parquet(path,  engine='fastparquet', partition_cols=[
+        "partition"], append=append_mode)
+
+
+# https://localhost:5000/api/call/balance_sheet?symbol="MSFT"&_output_format=str
+def balance_sheet(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
+
+    path = f"{DATA_PATH}/balance_sheet/{symbol}"
+    data = pd.read_parquet(path, engine='fastparquet')
+    data.set_index("Date", inplace=True)
+
+    data.reset_index(drop=False, inplace=True)
+    data["Date"] = data["Date"].dt.strftime(
+        '%Y-%m-%d')
+    return data
+
+
+# https://localhost:5000/api/call/load_quarterly_balance_sheet?symbol="MSFT"&_output_format=str
+def load_quarterly_balance_sheet(symbol: str = "MSFT"):
+
+    path = f"{DATA_PATH}/quarterly_balance_sheet/{symbol}"
+    LOG.info(f"Loanding quarterly_balance_sheet : {symbol}")
+    ticket = yf.Ticker(symbol)
+
+    data = ticket.quarterly_balance_sheet.transpose()
+    data.index.names = ['Date']
+
+    if is_empty_dir(path):
+        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
+        append_mode = False
+    else:
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
+        last_update = pd.read_parquet(
+            path, engine='fastparquet', columns=["Date"])["Date"].max()
+        append_mode = True
+
+    data = data[data.index > last_update.strftime(
+        '%Y-%m-%d')]
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
+
+    data['partition'] = data.index
+    data['partition'] = pd.Categorical(
+        data['partition'].dt.strftime('%Y-%m'))
+    data.reset_index(drop=False, inplace=True)
+
+    data.to_parquet(path,  engine='fastparquet', partition_cols=[
+        "partition"], append=append_mode)
+
+
+# https://localhost:5000/api/call/quarterly_balance_sheet?symbol="MSFT"&_output_format=str
+def quarterly_balance_sheet(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
+
+    path = f"{DATA_PATH}/quarterly_balance_sheet/{symbol}"
+    data = pd.read_parquet(path, engine='fastparquet')
+    data.set_index("Date", inplace=True)
+
+    data.reset_index(drop=False, inplace=True)
+    data["Date"] = data["Date"].dt.strftime(
+        '%Y-%m-%d')
+    return data
+
+
+# https://localhost:5000/api/call/load_calendar?symbol="MSFT"&_output_format=str
+def load_calendar(symbol: str = "MSFT"):
+
+    path = f"{DATA_PATH}/calendar/{symbol}"
+    LOG.info(f"Loanding calendar : {symbol}")
+    ticket = yf.Ticker(symbol)
+
+    data = ticket.calendar
+    for key in data:
+        if isinstance(data[key], datetime.date):
+            data[key] = str(data[key])
+    if 'Earnings Date' in data:
+        data['Earnings Date'] = list(
+            map(lambda date: str(date), data['Earnings Date']))
+
+    if not 'Ex-Dividend Date' in data:
+        data['Ex-Dividend Date'] = "1970-01-01"
+
+    data = {"Date": pd.to_datetime(data['Ex-Dividend Date']),
+            "json": [json.dumps(data)]}
+
+    data = pd.DataFrame.from_dict(data)
+    data = data.set_index('Date')
+
+    if is_empty_dir(path):
+        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
+        append_mode = False
+    else:
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
+        last_update = pd.read_parquet(
+            path, engine='fastparquet', columns=["Date"])["Date"].max()
+        append_mode = True
+
+    data = data[data.index > last_update.strftime(
+        '%Y-%m-%d')]
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
+
+    data['partition'] = data.index
+    data['partition'] = pd.Categorical(
+        data['partition'].dt.strftime('%Y-%m'))
+    data.reset_index(drop=False, inplace=True)
+
+    data.to_parquet(path,  engine='fastparquet', partition_cols=[
+        "partition"], append=append_mode)
+
+
+# https://localhost:5000/api/call/calendar?symbol="MSFT"&_output_format=str
+def calendar(symbol: str = "MSFT") -> pd.core.frame.DataFrame:
+
+    path = f"{DATA_PATH}/calendar/{symbol}"
+    data = pd.read_parquet(path, engine='fastparquet')
+    data.set_index("Date", inplace=True)
+
+    data.reset_index(drop=False, inplace=True)
+    data["Date"] = data["Date"].dt.strftime(
+        '%Y-%m-%d')
+    return data
+
+
+# https://localhost:5000/api/call/load_shares?symbol="MSFT"&_output_format=str
+def load_shares(symbol: str = "MSFT"):
+
+    path = f"{DATA_PATH}/shares/{symbol}"
+
+    LOG.info(f"Loanding shares : {symbol}")
+    ticker = yf.Ticker(symbol)
+
+    if is_empty_dir(path):
+        last_update = pd.Timestamp(datetime.datetime(1970, 1, 1, 0, 0))
+        append_mode = False
+    else:
+        if os.path.isfile(path+"/_metadata"):
+            os.remove(path+"/_metadata")
+        last_update = pd.read_parquet(
+            path, engine='fastparquet', columns=["Date"])["Date"].max()
+        append_mode = True
+
+    data = ticker.get_shares_full(start=last_update.strftime('%Y-%m-%d'),
+                                  end=None)
+    data = data if data is not None else pd.Series()
+
+    if data.shape[0] != 0:
+        data = data.to_frame(name="shares")
+        data.index.names = ['Date']
+
+        data = data[data.index > last_update.strftime('%Y-%m-%d')]
+    LOG.info(f"Last update date: {last_update.strftime('%Y-%m-%d')}")
+    LOG.info(f"Number new lines: {str(data.shape[0])}")
+
+    if data.shape[0] != 0:
+        data['partition'] = data.index
+        data['partition'] = pd.Categorical(
+            data['partition'].dt.strftime('%Y-%m'))
+        data.reset_index(drop=False, inplace=True)
+        data.to_parquet(path,  engine='fastparquet', partition_cols=[
+                        "partition"], append=append_mode)
+
+
+# https://localhost:5000/api/call/shares?symbol="MSFT"&start="2024-11-05"&_output_format=str
+def shares(symbol: str = "MSFT",
+           start: str = "1900-01-01",
+           end: str = "3000-01-01") -> pd.core.frame.DataFrame:
+
+    path = f"{DATA_PATH}/shares/{symbol}"
+    data = pd.read_parquet(path, engine='fastparquet')
+    data.set_index("Date", inplace=True)
+
+    data = data[(data.index >= start) & (data.index <= end)]
+
+    data.reset_index(drop=False, inplace=True)
+    data["Date"] = data["Date"].dt.strftime('%Y-%m-%d')
+    return data
+
+# https://localhost:5000/api/call/load_gold
+
+
+def load_gold():
+    load_stock("GC=F")
+
+# https://localhost:5000/api/call/gold&start="2024-11-05"&_output_format=str
+
+
+def gold(start: str = "1900-01-01",
+         end: str = "3000-01-01") -> pd.core.frame.DataFrame:
+    return stock("GC=F")
+
+
 def loader_SP500():
     for symbol in list(SP500()["Symbol"]):
-        # load_stock(symbol)
+        load_stock(symbol)
         load_dividends(symbol)
-        # load_splits(symbol)
-        # load_income(symbol)
-        # load_quarterly_income(symbol)
-        # load_cashflow(symbol)
-        # load_quarterly_cashflow(symbol)
+        load_splits(symbol)
+        load_income(symbol)
+        load_quarterly_income(symbol)
+        load_cashflow(symbol)
+        load_quarterly_cashflow(symbol)
+        load_balance_sheet(symbol)
+        load_quarterly_balance_sheet(symbol)
+        load_calendar(symbol)
+        load_shares(symbol)
 
 
 # load_stock()
@@ -397,41 +625,46 @@ def loader_SP500():
 # load_quarterly_income()
 # pprint(quarterly_income())
 
-# loader_SP500()
 
+loader_SP500()
 
-def scheduler():
-    cpt = 5
-    while True:
-        try:
-            t = 5/cpt
-            cpt -= 1
-            LOG.info("I'm running")
-            print("I'm running")
-            time.sleep(1)
-        except Exception as e:
-            exception = traceback.format_exc()
-            LOG.error(exception)
-            time.sleep(10)
+#load_gold()
+#print(gold)
 
+exit()
 
-threading.Thread(target=scheduler).start()
-
-
-while True:
-    print("exec api")
-    time.sleep(2)
-
-
+# -----------------------------------------------------------------------------#
+# def scheduler():
+#    cpt = 5
+#    while True:
+#        try:
+#            t = 5/cpt
+#            cpt -= 1
+#            LOG.info("I'm running")
+#            print("I'm running")
+#            time.sleep(1)
+#        except Exception as e:
+#            exception = traceback.format_exc()
+#            LOG.error(exception)
+#            time.sleep(10)
 #
-#    msft = yf.Ticker("MSFT")
-#    pprint(msft.calendar)
+#
+# threading.Thread(target=scheduler).start()
+#
+#
+# while True:
+#    print("exec api")
+#    time.sleep(2)
+
+# -----------------------------------------------------------------------------#
+#
+msft = yf.Ticker("MSFT")
+pprint(msft.get_shares_full(start="2022-01-01", end=None))
+
 
 # TODO: a finir
-# msft.balance_sheet
-# msft.quarterly_balance_sheet
-# msft.get_shares_full(start="2022-01-01", end=None)
-# msft.calendar
+# les taux de la fed
+
 
 # CA
 # resultat net
@@ -441,9 +674,7 @@ while True:
 # distripution des dividendes
 # investisement
 # cacheflow
-# les taux de la fed 
 # les taux de la BCE
-# le cours de l'or  
 
 
 # Informations:
