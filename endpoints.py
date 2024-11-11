@@ -441,6 +441,9 @@ while True:
 # distripution des dividendes
 # investisement
 # cacheflow
+# les taux de la fed 
+# les taux de la BCE
+# le cours de l'or  
 
 
 # Informations:
