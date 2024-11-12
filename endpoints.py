@@ -819,7 +819,7 @@ def loader_SP500():
         load_calendar(symbol)
         load_shares(symbol)
 
-#loader_SP500()
+loader_SP500()
 
 load_gold()
 #print(gold)
