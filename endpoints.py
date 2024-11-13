@@ -14,6 +14,8 @@ import numpy as np
 import requests
 import configparser
 
+pd.set_option('display.max_rows', None)
+
 
 LOG_PATH = "loader.log"
 LOG = logging.getLogger("Rotating Log")
@@ -811,6 +813,10 @@ def loader_SP500():
         load_calendar(symbol)
         load_shares(symbol)
 
+load_gold()
+print(gold())
+
+exit(0)
 
 loader_SP500()
 
