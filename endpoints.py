@@ -652,7 +652,6 @@ def load_fedfunds():
                     append=append_mode)
 
 
-
 # https://localhost:5000/api/call/fedfunds?_output_format=str
 def fedfunds() -> pd.core.frame.DataFrame:
 
@@ -662,7 +661,6 @@ def fedfunds() -> pd.core.frame.DataFrame:
     data.reset_index(drop=False, inplace=True)
     data["Date"] = data["Date"].dt.strftime('%Y-%m-%d')
     return data
-
 
 
 # https://localhost:5000/api/call/load_unemployment_usa
@@ -681,7 +679,7 @@ def load_unemployment_usa():
 
     url = "https://api.stlouisfed.org/fred/series/observations"
     params = {
-        "series_id": "UNRATE",  
+        "series_id": "UNRATE",
         "api_key": api_key,
         "file_type": "json",
         "observation_start": start_date,
@@ -719,8 +717,6 @@ def load_unemployment_usa():
     data.reset_index(drop=False, inplace=True)
     data.to_parquet(path,  engine='fastparquet', partition_cols=["partition"],
                     append=append_mode)
-    
-
 
 
 # https://localhost:5000/api/call/unemployment_usa?_output_format=str
@@ -732,8 +728,6 @@ def unemployment_usa() -> pd.core.frame.DataFrame:
     data.reset_index(drop=False, inplace=True)
     data["Date"] = data["Date"].dt.strftime('%Y-%m-%d')
     return data
-
-
 
 
 # https://localhost:5000/api/call/load_inflation_usa
@@ -752,7 +746,7 @@ def load_inflation_usa():
 
     url = "https://api.stlouisfed.org/fred/series/observations"
     params = {
-        "series_id": "FPCPITOTLZGUSA", 
+        "series_id": "FPCPITOTLZGUSA",
         "api_key": api_key,
         "file_type": "json",
         "observation_start": start_date,
@@ -767,7 +761,6 @@ def load_inflation_usa():
     for line in data:
         tmp_data["Date"].append(pd.Timestamp(line["date"]))
         tmp_data["value"].append(float(line["value"]))
-
 
     data = pd.DataFrame.from_dict(tmp_data)
     data = data.set_index("Date")
@@ -791,7 +784,6 @@ def load_inflation_usa():
     data.reset_index(drop=False, inplace=True)
     data.to_parquet(path,  engine='fastparquet', partition_cols=["partition"],
                     append=append_mode)
-
 
 
 # https://localhost:5000/api/call/inflation_usa?_output_format=str
@@ -819,20 +811,21 @@ def loader_SP500():
         load_calendar(symbol)
         load_shares(symbol)
 
+
 loader_SP500()
 
 load_gold()
-#print(gold)
+# print(gold)
 
 
 load_fedfunds()
-#print(fedfunds())
+# print(fedfunds())
 
 load_unemployment_usa()
-#print(unemployment_usa())
+# print(unemployment_usa())
 
 load_inflation_usa()
-#print(inflation_usa())
+# print(inflation_usa())
 
 
 exit()
