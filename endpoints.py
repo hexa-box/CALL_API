@@ -813,12 +813,17 @@ def loader_SP500():
         load_calendar(symbol)
         load_shares(symbol)
 
-load_gold()
-print(gold())
+#load_gold()
+#print(gold())
+
+load_quarterly_income("FTNT")
+print(quarterly_income("FTNT"))
 
 exit(0)
 
 loader_SP500()
+
+#exit(0)
 
 load_gold()
 # print(gold)
