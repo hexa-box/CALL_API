@@ -813,6 +813,33 @@ def loader_SP500():
         load_calendar(symbol)
         load_shares(symbol)
 
+
+#-----------------------------------------------------------------------------#
+
+
+ticker = yf.Ticker("MSFT")
+data = ticker.history(start='2024-01-01')
+
+import pandas as pd
+from pyspark.sql import SparkSession
+
+# Créer une session Spark avec configuration pour Arrow
+spark = SparkSession.builder.appName("MonApplicationSpark").getOrCreate()
+
+
+# Convertir le DataFrame Pandas en DataFrame Spark en utilisant Arrow
+df_spark = spark.createDataFrame(data)
+
+# Afficher le DataFrame Spark
+df_spark.show()
+
+
+# Arrêt de la session Spark
+spark.stop()
+
+
+sys.exit(0)
+
 #load_gold()
 #print(gold())
 
