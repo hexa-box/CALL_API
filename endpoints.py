@@ -818,10 +818,16 @@ def loader_SP500():
 
 
 ticker = yf.Ticker("MSFT")
-data = ticker.history(start='2024-01-01')
+data = ticker.income_stmt
+
+data['header'] = data.index
+print(data)
+
+data = data.transpose()
 
 import pandas as pd
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import struct, to_json
 
 # Créer une session Spark avec configuration pour Arrow
 spark = SparkSession.builder.appName("MonApplicationSpark").getOrCreate()
@@ -832,6 +838,10 @@ df_spark = spark.createDataFrame(data)
 
 # Afficher le DataFrame Spark
 df_spark.show()
+df_spark.printSchema()
+
+
+df_spark.withColumn("json", to_json(struct("EBITDA", "EBIT"))).select("json").show()
 
 
 # Arrêt de la session Spark
