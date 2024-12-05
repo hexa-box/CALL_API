@@ -832,16 +832,12 @@ from pyspark.sql.functions import struct, to_json
 # Créer une session Spark avec configuration pour Arrow
 spark = SparkSession.builder.appName("MonApplicationSpark").getOrCreate()
 
+import utils.spark_df
 
-# Convertir le DataFrame Pandas en DataFrame Spark en utilisant Arrow
-df_spark = spark.createDataFrame(data)
+df = spark_df(data)
 
 # Afficher le DataFrame Spark
 df_spark.show()
-df_spark.printSchema()
-
-
-df_spark.withColumn("json", to_json(struct("EBITDA", "EBIT"))).select("json").show()
 
 
 # Arrêt de la session Spark
